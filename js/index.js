@@ -1,35 +1,61 @@
 let input = document.getElementById("display");
+let currentValue = ""; // Змінна для поточного значення на екрані
+let operation = null; // Операція, яка вибрана користувачем
+let firstValue = null; // Перше значення перед операцією
 
+// Додаємо обробник на всі кнопки
 document.querySelectorAll(".calculator__btn button").forEach((button) => {
   button.addEventListener("click", check);
 });
-let rusL = [];
-function check(event) {
-  const value0 = event.target.textContent; // Отримуємо текст кнопки
-  // Виведе: "7", "8" або "9" в залежності від натиснутої кнопки
-  // Тут ви можете виконати будь-які дії з отриманим значенням
-  input.value = value0;
-  let ansew;
-  function result() {
-    let prop = input.value;
-    rusL.push(prop);
 
-    if (rusL[1] == "-") {
-      ansew = rusL[0] - rusL[2];
-    } else if (rusL[1] == "+") {
-      ansew = +rusL[0] + +rusL[2];
-    } else if (rusL[1] == "*") {
-      ansew = rusL[0] * rusL[2];
-    } else if (rusL[1] == "/") {
-      ansew = rusL[0] / rusL[2];
-    }
-    if (rusL.length === 3) {
-      input.value = ansew;
-    }
-    if (rusL.length === 3) {
-      rusL = [];
-    }
-    console.log(ansew);
+function check(event) {
+  const value = event.target.textContent; // Отримуємо текст кнопки
+
+  // Якщо натиснута цифра
+  if (!isNaN(value)) {
+    currentValue += value; // Додаємо цифру до поточного значення
+    input.value = currentValue; // Оновлюємо дисплей
   }
-  result();
+
+  // Якщо натиснута операція
+  else if (value === "+" || value === "-" || value === "X" || value === "/") {
+    if (firstValue === null) {
+      firstValue = parseFloat(currentValue); // Запам'ятовуємо перше значення
+      currentValue = ""; // Очищаємо поточне значення
+    }
+    operation = value; // Запам'ятовуємо вибрану операцію
+  }
+
+  // Якщо натиснута кнопка "=" (рівно)
+  else if (value === "=") {
+    if (firstValue !== null && currentValue !== "") {
+      const secondValue = parseFloat(currentValue); // Перетворюємо друге значення на число
+      let result = 0;
+
+      // Виконуємо операцію в залежності від вибору
+      if (operation === "+") {
+        result = firstValue + secondValue;
+      } else if (operation === "-") {
+        result = firstValue - secondValue;
+      } else if (operation === "X") {
+        result = firstValue * secondValue;
+      } else if (operation === "/") {
+        result = firstValue / secondValue;
+      }
+
+      // Виводимо результат і скидаємо всі змінні для нових операцій
+      input.value = result;
+      currentValue = result.toString();
+      firstValue = null;
+      operation = null;
+    }
+  }
+
+  // Якщо натиснута кнопка "C" (очистити)
+  else if (value === "C") {
+    currentValue = "";
+    firstValue = null;
+    operation = null;
+    input.value = "";
+  }
 }
